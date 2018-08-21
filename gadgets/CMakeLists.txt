@@ -60,17 +60,18 @@ if (MATLAB_FOUND)
   add_subdirectory(matlab)
 endif()
 
-# nest the find_package checks to provide more useful error messages
-find_package(Boost COMPONENTS python system thread REQUIRED)
+if (${BUILD_PYTHON_SUPPORT})
+ # nest the find_package checks to provide more useful error messages
+ find_package(Boost COMPONENTS python system thread REQUIRED)
 
-if (Boost_PYTHON_FOUND AND PYTHONLIBS_FOUND AND NUMPY_FOUND)
+ if (Boost_PYTHON_FOUND AND PYTHONLIBS_FOUND AND NUMPY_FOUND)
     message("PYTHON_INCLUDE_DIRS: ${PYTHON_INCLUDE_DIRS}")
     message("PYTHON_LIBRARIES: ${PYTHON_LIBRARIES}")
     message("NUMPY_INCLUDE_DIRS: ${NUMPY_INCLUDE_DIRS}")
     message("Compiling Python Gadgets")
     add_subdirectory(python)   
     add_definitions(-DCOMPILING_WITH_PYTHON_SUPPORT)
-else ()
+ else ()
     if(NOT PYTHONLIBS_FOUND)
         message("Python Libraries/Headers NOT found, NOT compiling Python Gadgets")
     endif()
@@ -80,7 +81,8 @@ else ()
     if(NOT Boost_PYTHON_FOUND)
         message("Boost Python NOT found, NOT compiling Python Gadgets")
     endif()
-endif ()
+ endif ()
+endif()
 
 add_subdirectory(util)
 
