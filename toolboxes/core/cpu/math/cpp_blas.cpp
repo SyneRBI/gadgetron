@@ -1,5 +1,11 @@
 #include "cpp_blas.h"
 
+#ifdef __APPLE__
+#ifndef ACCELERATE_NEW_LAPACK
+#define ACCELERATE_NEW_LAPACK
+#endif
+#endif
+
 #ifdef USE_MKL
 #include "mkl.h"
 #else
