@@ -11,13 +11,15 @@ endif()
 if (WIN32)
     set(GT_DICOM_LIBRARIES cmr i2d ijg8 dcmfg)
 else ()
+    
     set(GT_DICOM_LIBRARIES
-            dcmdata
-            oflog
-            ofstd
+
         z m pthread)
     if (APPLE)
         list(APPEND GT_DICOM_LIBRARIES iconv)
+    endif ()
+    if (DCMTK_FOUND)
+        list(APPEND GT_DICOM_LIBRARIES dcmdata oflog ofstd)
     endif ()
 endif ()
 

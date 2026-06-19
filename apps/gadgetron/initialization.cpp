@@ -9,6 +9,7 @@
 
 #ifdef FORCE_LIMIT_OPENBLAS_NUM_THREADS
 #include <cblas.h>
+extern "C" void openblas_set_num_threads(int num_threads);
 #endif
 #include <locale>
 namespace Gadgetron::Server {
