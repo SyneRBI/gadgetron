@@ -196,7 +196,7 @@ void Gadgetron::transform(const hoNDArray<T> &input,hoNDArray<S>& output, F&& fu
     if (output.size() != input.size()) {
         throw std::runtime_error("Input and output arrays have different number of elements");
     }
-#pragma omp simd
+#pragma omp parallel for
     for (long long i = 0; i < (long long)input.size(); i++) {
         output[i] = fun(input[i]);
     }
@@ -204,7 +204,7 @@ void Gadgetron::transform(const hoNDArray<T> &input,hoNDArray<S>& output, F&& fu
 
 template <class T, class F, class S> hoNDArray<S> Gadgetron::transform(const hoNDArray<T>& input, F&& fun) {
     hoNDArray<S> output(input.dimensions());
-#pragma omp simd
+#pragma omp parallel for
     for (long long i = 0; i < (long long)input.size(); i++) {
         output[i] = fun(input[i]);
     }

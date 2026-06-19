@@ -95,7 +95,7 @@ namespace Gadgetron
                 auto &weights = matrix.weights[i];
 
                 #ifndef WIN32
-                    #pragma omp simd
+                    #pragma clang loop vectorize(enable)
                 #endif // WIN32
                 for (size_t n = 0; n < row_indices.size(); n++)
                 {

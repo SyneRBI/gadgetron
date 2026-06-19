@@ -83,7 +83,7 @@ namespace Gadgetron::Core::IO {
     void write(std::ostream& ostream, const std::tuple<ARGS...>& tup);
 
     template<class T>
-    std::enable_if_t<std::is_base_of_v<SfndamSerializable<T>,T>> write(std::ostream &stream, const SfndamSerializable<T> &t);
+    std::enable_if_t<std::is_base_of_v<SfndamSerializable<T>,T>> write(std::ostream &stream, const T &t);
 
     template<class T>
     std::enable_if_t<boost::hana::Struct<T>::value, void> write(std::ostream &ostream, const T &x);
