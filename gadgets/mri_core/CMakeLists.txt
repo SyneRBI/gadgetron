@@ -7,8 +7,21 @@ find_package(ZFP)
 include_directories(${HDF5_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/core/io)
 
 if(MSVC)
+  set(_x86_cpu_files 
+        CompressedFloatBufferAvx2.cpp
+        CompressedFloatBufferSse41.cpp
+  )
   set_source_files_properties(CompressedFloatBufferAvx2.cpp PROPERTIES COMPILE_FLAGS "/arch:AVX2")
+elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+  if (APPLE)
+    message(STATUS "Gadgetron: Using Clang compiler, disabling AVX2 and FMA for CompressedFloatBufferAvx2.cpp")
+      set(_x86_cpu_files  )
+  endif()
 else()
+    set(_x86_cpu_files 
+        CompressedFloatBufferAvx2.cpp
+        CompressedFloatBufferSse41.cpp
+    )
   set_source_files_properties(CompressedFloatBufferSse41.cpp PROPERTIES COMPILE_FLAGS "-msse4.1")
   set_source_files_properties(CompressedFloatBufferAvx2.cpp PROPERTIES COMPILE_FLAGS "-mavx2 -mfma")
 endif()
@@ -92,8 +105,7 @@ set(gadgetron_mricore_src_files
         SimpleReconGadget.cpp
         ImageSortGadget.cpp
         CompressedFloatBuffer.cpp
-        CompressedFloatBufferSse41.cpp
-        CompressedFloatBufferAvx2.cpp
+        ${_x86_cpu_files}
         cpuisa.cpp
         dependencyquery/NoiseSummaryGadget.cpp
         ImageAccumulatorGadget.cpp

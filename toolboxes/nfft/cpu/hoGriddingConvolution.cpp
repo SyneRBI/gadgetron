@@ -95,7 +95,9 @@ namespace Gadgetron
                 auto &weights = matrix.weights[i];
 
                 #ifndef WIN32
+                #if !defined(WIN32) && !defined(__APPLE__)
                     #pragma clang loop vectorize(enable)
+                #endif // !defined(WIN32) && !defined(__APPLE__)
                 #endif // WIN32
                 for (size_t n = 0; n < row_indices.size(); n++)
                 {

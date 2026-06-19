@@ -6,6 +6,7 @@ using namespace NHLBI;
 
 CompressedFloatBuffer* CompressedFloatBuffer::createCompressedBuffer(InstructionSet instructionSet)
 {
+#if defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) || defined(_M_X64)
     switch (instructionSet)
     {
     case InstructionSet::Native:
@@ -22,6 +23,9 @@ CompressedFloatBuffer* CompressedFloatBuffer::createCompressedBuffer(Instruction
         }
         break;
     }
+#else
+    (void)instructionSet;
+#endif
 
     return new CompressedFloatBuffer;
 }

@@ -1,19 +1,23 @@
 #include <string.h>
 
+#if defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) || defined(_M_X64)
 #ifdef _MSC_VER
 // SIMD intrinsics for Windows
 #include <intrin.h>
 #define cpuid(info, level) __cpuid(info, level)
 #define cpuidex(info, leaf, subleaf) __cpuidex(info, leaf, subleaf)
 #else
-// SIMD intrinsics for GCC
+// SIMD intrinsics for GCC/Clang on x86
 #include <x86intrin.h>
 #include <cpuid.h>
 #define cpuid(info, level) __cpuid(level, info[0], info[1], info[2], info[3]);
 #define cpuidex(info, leaf, subleaf) __cpuid_count(leaf, subleaf, info[0], info[1], info[2], info[3]);
 #endif
+#endif
 
 #include "cpuisa.h"
+
+#if defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) || defined(_M_X64)
 
 namespace {
 	class BitSet
@@ -218,7 +222,79 @@ bool CPU_supports_TBM() { return CPU_Rep.isAMD_ && CPU_Rep.f_81_ECX_[21]; }
 bool CPU_supports_SYSCALL() { return CPU_Rep.isIntel_ && CPU_Rep.f_81_EDX_[11]; }
 bool CPU_supports_MMXEXT() { return CPU_Rep.isAMD_ && CPU_Rep.f_81_EDX_[22]; }
 bool CPU_supports_RDTSCP() { return CPU_Rep.isIntel_ && CPU_Rep.f_81_EDX_[27]; }
+
 bool CPU_supports_3DNOWEXT() { return CPU_Rep.isAMD_ && CPU_Rep.f_81_EDX_[30]; }
 bool CPU_supports_3DNOW() { return CPU_Rep.isAMD_ && CPU_Rep.f_81_EDX_[31]; }
+
+#else
+
+const char* CPU_Vendor() { return "non-x86"; }
+const char* CPU_Brand() { return "non-x86"; }
+
+bool CPU_supports_SSE3() { return false; }
+bool CPU_supports_PCLMULQDQ() { return false; }
+bool CPU_supports_MONITOR() { return false; }
+bool CPU_supports_SSSE3() { return false; }
+bool CPU_supports_FMA() { return false; }
+bool CPU_supports_CMPXCHG16B() { return false; }
+bool CPU_supports_AVX512POPCNTDQ() { return false; }
+bool CPU_supports_SSE41() { return false; }
+bool CPU_supports_SSE42() { return false; }
+bool CPU_supports_MOVBE() { return false; }
+bool CPU_supports_POPCNT() { return false; }
+bool CPU_supports_AES() { return false; }
+bool CPU_supports_XSAVE() { return false; }
+bool CPU_supports_OSXSAVE() { return false; }
+bool CPU_supports_AVX() { return false; }
+bool CPU_supports_F16C() { return false; }
+bool CPU_supports_RDRAND() { return false; }
+
+bool CPU_supports_MSR() { return false; }
+bool CPU_supports_CX8() { return false; }
+bool CPU_supports_SEP() { return false; }
+bool CPU_supports_CMOV() { return false; }
+bool CPU_supports_CLFSH() { return false; }
+bool CPU_supports_MMX() { return false; }
+bool CPU_supports_FXSR() { return false; }
+bool CPU_supports_SSE() { return false; }
+bool CPU_supports_SSE2() { return false; }
+
+bool CPU_supports_FSGSBASE() { return false; }
+bool CPU_supports_BMI1() { return false; }
+bool CPU_supports_HLE() { return false; }
+bool CPU_supports_AVX2() { return false; }
+bool CPU_supports_BMI2() { return false; }
+bool CPU_supports_ERMS() { return false; }
+bool CPU_supports_INVPCID() { return false; }
+bool CPU_supports_RTM() { return false; }
+bool CPU_supports_AVX512F() { return false; }
+bool CPU_supports_AVX512DQ() { return false; }
+bool CPU_supports_RDSEED() { return false; }
+bool CPU_supports_ADX() { return false; }
+bool CPU_supports_AVX512IFMA() { return false; }
+bool CPU_supports_AVX512PF() { return false; }
+bool CPU_supports_AVX512ER() { return false; }
+bool CPU_supports_AVX512CD() { return false; }
+bool CPU_supports_SHA() { return false; }
+bool CPU_supports_AVX512BW() { return false; }
+bool CPU_supports_AVX512VL() { return false; }
+
+bool CPU_supports_PREFETCHWT1() { return false; }
+
+bool CPU_supports_LAHF() { return false; }
+bool CPU_supports_LZCNT() { return false; }
+bool CPU_supports_ABM() { return false; }
+bool CPU_supports_SSE4a() { return false; }
+bool CPU_supports_XOP() { return false; }
+bool CPU_supports_TBM() { return false; }
+
+bool CPU_supports_SYSCALL() { return false; }
+bool CPU_supports_MMXEXT() { return false; }
+bool CPU_supports_RDTSCP() { return false; }
+
+bool CPU_supports_3DNOWEXT() { return false; }
+bool CPU_supports_3DNOW() { return false; }
+
+#endif
 
 

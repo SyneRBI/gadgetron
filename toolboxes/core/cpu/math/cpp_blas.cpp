@@ -22,6 +22,13 @@ extern "C" {
 #define CBLAS_COMPLEX_DOUBLE void
 #endif
 
+#ifdef __APPLE__
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
+#endif
+
 float Gadgetron::BLAS::asum(size_t N, const float* x, size_t incx) {
     return cblas_sasum(N, x, incx);
 }
@@ -334,3 +341,9 @@ void Gadgetron::BLAS::herk(bool upper, bool trans, size_t n, size_t k, double al
     cblas_zherk(CblasColMajor, upper ? CblasUpper : CblasLower, trans ? CblasConjTrans : CblasNoTrans, n, k, alpha,
                 (double*)a, lda, beta, (double*)c, ldc);
 }
+
+#ifdef __APPLE__
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
+#endif

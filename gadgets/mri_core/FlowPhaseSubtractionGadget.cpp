@@ -30,10 +30,17 @@ void FlowPhaseSubtractionGadget::process(Core::InputChannel<Core::Image<std::com
         if (queues[0].empty() || queues[1].empty())
             continue;
 
-        auto [header1, data1, meta1] = std::move(queues[0].front());
-        auto [header2, data2, meta2] = std::move(queues[1].front());
+        auto image1 = std::move(queues[0].front());
+        auto image2 = std::move(queues[1].front());
         queues[0].pop();
         queues[1].pop();
+
+        auto& header1 = std::get<0>(image1);
+        auto& data1 = std::get<1>(image1);
+        auto& meta1 = std::get<2>(image1);
+        auto& header2 = std::get<0>(image2);
+        auto& data2 = std::get<1>(image2);
+        auto& meta2 = std::get<2>(image2);
 
         if (header1.image_index != header2.image_index)
             throw std::runtime_error("Mismatch in input indices detected");

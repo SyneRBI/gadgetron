@@ -230,8 +230,6 @@ namespace Gadgetron {
             //Now we can loop over each pixel and estimate the new frames, but first we have to have somewhere to put the data
 
 
-            using namespace ranges;
-
             auto image_generator = [&](float cycle_time) -> Core::Image<std::complex<float>> {
                 const auto&[ref_header, ref_data, ref_meta] = buffer.front();
                 auto header = ref_header;
@@ -273,7 +271,11 @@ namespace Gadgetron {
                 return {header, data, meta};
             };
 
-            auto output = ranges::transform_view(recon_cycle_time, image_generator) | to<std::vector>;
+            std::vector<Core::Image<std::complex<float>>> output;
+            output.reserve(recon_cycle_time.size());
+            for (const auto cycle_time : recon_cycle_time) {
+                output.push_back(image_generator(cycle_time));
+            }
 
 
             if ((interp_method == PhysioInterpolationMethod::Spline) || (mode != PhysioInterpolationMode::complete)) {
