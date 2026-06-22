@@ -20,7 +20,6 @@
 
 #include "GadgetronTimer.h"
 
-#include "NFFT.hpp"
 #include "NDArray_utils.h"
 
 #include "hoGriddingConvolution.h"

@@ -19,9 +19,6 @@
 #include "cuNDArray_utils.h"
 #include "cuNDFFT.h"
 
-#include "NFFT.hpp"
-
-
 using namespace Gadgetron;
 
 

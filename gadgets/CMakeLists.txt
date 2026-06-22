@@ -39,6 +39,8 @@ if(DCMTK_FOUND)
   add_subdirectory(dicom)
 else()
   message("DCMTK NOT found, not compiling DICOM gadget")
+  set (DCMTK_INCLUDE_DIRS "")
+  set (DCMTK_LIBRARIES "")
 endif()
 
 add_subdirectory(cartesian)

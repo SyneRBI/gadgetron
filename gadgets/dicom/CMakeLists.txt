@@ -15,6 +15,7 @@ else ()
     set(GT_DICOM_LIBRARIES
 
         z m pthread)
+    
     if (APPLE)
         list(APPEND GT_DICOM_LIBRARIES iconv)
     endif ()
@@ -26,7 +27,9 @@ endif ()
 # sanity check:
 message("DCMTK ${DCMTK_HOME}")
 message("Include: ${DCMTK_INCLUDE_DIRS}")
+message("Libraries: ${DCMTK_LIBRARIES}")
 message("Libraries: ${GT_DICOM_LIBRARIES}")
+# message (FATAL_ERROR "DCMTK ${DCMTK_HOME} ${DCMTK_INCLUDE_DIRS} ${DCMTK_LIBRARIES} ${GT_DICOM_LIBRARIES}")
 
 include_directories(
         ${CMAKE_SOURCE_DIR}/gadgets/mri_core    # for GadgetIsmrmrdReadWrite.h
@@ -82,7 +85,10 @@ target_link_libraries(gadgetron_dicom
     gadgetron_toolbox_log
     gadgetron_toolbox_cpucore
     ISMRMRD::ISMRMRD
-    ${GT_DICOM_LIBRARIES} )
+    ${GT_DICOM_LIBRARIES}
+    ${DCMTK_LIBRARIES} )
+
+target_link_directories(gadgetron_dicom PRIVATE ${DCMTK_CMAKE_INSTALL_PREFIX}/lib)
 
 if(ARMADILLO_FOUND)
     target_link_libraries(gadgetron_dicom gadgetron_toolbox_cpucore_math )

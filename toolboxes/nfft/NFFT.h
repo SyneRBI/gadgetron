@@ -178,3 +178,5 @@ namespace Gadgetron {
 
 
 }
+
+#include "NFFT.hpp"
