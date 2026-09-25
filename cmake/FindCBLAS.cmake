@@ -25,8 +25,7 @@ else ()
         find_path(CBLAS_BASE_INCLUDE_DIR openblas/cblas.h
                 PATHS /usr/include /usr/local/include)
         if (NOT CBLAS_BASE_INCLUDE_DIR)
-            find_path(CBLAS_INCLUDE_DIR cblas.h
-                    PATHS /usr/include /usr/local/include)
+            find_path(CBLAS_INCLUDE_DIR cblas.h)
         else ()
             set(CBLAS_INCLUDE_DIR ${CBLAS_BASE_INCLUDE_DIR}/openblas)
         endif ()
@@ -35,9 +34,11 @@ else ()
         find_package(BLAS REQUIRED)
         find_package(LAPACK REQUIRED)
 
-        set(CBLAS_LIBRARIES ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
-        find_path(CBLAS_INCLUDE_DIR cblas.h
-                  PATHS /usr/include /usr/local/include)
+        # conda-forge netlib BLAS/LAPACK are Fortran-only; the C-BLAS API
+        # (cblas_*) that Gadgetron's cpu math toolbox calls lives in libcblas.
+        find_library(GT_CBLAS_WRAPPER_LIB cblas)
+        set(CBLAS_LIBRARIES ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${GT_CBLAS_WRAPPER_LIB})
+        find_path(CBLAS_INCLUDE_DIR cblas.h)
     endif ()
 
     message("BLAS ${CBLAS_LIBRARIES} LAPACK ${LAPACK_LIBRARIES}" )
