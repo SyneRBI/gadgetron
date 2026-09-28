@@ -2,7 +2,7 @@
 
 #include <future>
 #include <boost/asio.hpp>
-#include <boost/process.hpp>
+#include "Process.h"
 
 #include "connection/config/Config.h"
 
@@ -41,13 +41,13 @@ namespace Gadgetron::Server::Connection::Nodes {
         std::shared_ptr<ExternalChannel> open_connection(Config::Connect, const Core::StreamContext &);
         std::shared_ptr<ExternalChannel> open_external_channel(const Config::External &, const Core::StreamContext &);
 
-        void monitor_child(std::shared_ptr<boost::process::child>, std::shared_ptr<boost::asio::ip::tcp::acceptor>);
+        void monitor_child(std::shared_ptr<Gadgetron::Process::child>, std::shared_ptr<boost::asio::ip::tcp::acceptor>);
 
         std::future<std::shared_ptr<ExternalChannel>> channel;
         std::shared_ptr<Serialization> serialization;
         std::shared_ptr<Configuration> configuration;
 
-        boost::asio::io_service io_service;
+        boost::asio::io_context io_service;
 
         struct {
             std::future<void> child;

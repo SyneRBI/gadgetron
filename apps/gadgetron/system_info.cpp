@@ -212,22 +212,14 @@ namespace Gadgetron::Server::Info {
     namespace {
         boost::asio::ip::tcp get_max_tcp_protocol(){
 #ifdef __linux__
-            std::future<std::string> output_stream;
-
             // cat /sys/module/ipv6/parameters/disable
-            auto error = Gadgetron::Process::system(
-                boost::process::search_path("cat"),
-                boost::process::args={"/sys/module/ipv6/parameters/disable"},
-                boost::process::std_in.close(),
-                boost::process::std_out > output_stream,
-                boost::process::std_err > boost::process::null
-            );
+            auto output = Gadgetron::Process::capture_output("cat /sys/module/ipv6/parameters/disable 2>/dev/null");
 
-            if (!error) {
-                auto disabled = std::stoi(output_stream.get());
-
-                if (!disabled) {
-                    return boost::asio::ip::tcp::v6();
+            if (!output.empty()) {
+                try {
+                    if (std::stoi(output) == 0)
+                        return boost::asio::ip::tcp::v6();
+                } catch (const std::exception &) {
                 }
             }
 

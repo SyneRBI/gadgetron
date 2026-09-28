@@ -6,6 +6,7 @@
 #include <stack>
 #include <cmath>
 #include <cstdlib>
+#include <cstdio>
 #include "log.h"
 #include "Process.h"
 #include <regex>
@@ -17,7 +18,7 @@ namespace Gadgetron {
         try
         
         {
-            boost::asio::io_service io_service;
+            boost::asio::io_context io_service;
             boost::asio::ip::tcp::resolver resolver(io_service);
 
             ip_list.clear();
@@ -35,23 +36,16 @@ namespace Gadgetron {
             }
 #else
 
-            namespace bp = boost::process;
-
-            bp::ipstream stream;
-            auto c = Process::child(
-                    bp::search_path("ifconfig"),
-                    bp::std_out > stream
-            );
-
             auto reg = std::regex(R"(inet\s+(\S+))");
-            std::string line;
-            const std::string inet = "inet ";
-            while(c.running() && std::getline(stream, line) && !line.empty()){
-                std::smatch s;
-                if (!std::regex_search(line,s,reg)) continue;
-
-                ip_list.emplace_back(s[1]);
-
+            if (FILE *pipe = ::popen("ifconfig 2>/dev/null", "r")) {
+                char buf[256];
+                while (std::fgets(buf, sizeof buf, pipe)) {
+                    std::smatch s;
+                    std::string line(buf);
+                    if (std::regex_search(line, s, reg))
+                        ip_list.emplace_back(s[1].str());
+                }
+                ::pclose(pipe);
             }
 #endif // WIN32
         }

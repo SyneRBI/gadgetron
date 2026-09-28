@@ -1,9 +1,6 @@
 #include "Discovery.h"
 
-#include <boost/asio/io_service.hpp>
-
-#include <boost/process.hpp>
-#include <boost/process/async.hpp>
+#include "Process.h"
 
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/io.hpp>
@@ -73,22 +70,13 @@ namespace Gadgetron::Server::Connection::Nodes {
 
         GDEBUG_STREAM("Worker discovery command: " << worker_discovery_command);
 
-        std::error_code error_code;
-        std::future<std::string> output;
-        Process::system(
-                worker_discovery_command,
-                boost::process::std_out > output,
-                boost::process::std_err > boost::process::null,
-                boost::asio::io_service{},
-                error_code
-        );
-
-        if (error_code) {
-            GWARN_STREAM("Failed executing remote worker command: " << error_code.message());
+        std::string output = Process::capture_output(worker_discovery_command);
+        if (output.empty()) {
+            GWARN_STREAM("No output from remote worker command");
             return std::vector<Address>();
         }
 
-        return parse_remote_workers(output.get());
+        return parse_remote_workers(output);
     }
 
     std::vector<Address> discover_peers() {

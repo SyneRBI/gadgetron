@@ -22,7 +22,7 @@ using tcp = boost::asio::ip::tcp;
 
 namespace {
 
-    const std::map<std::string, std::function<boost::process::child(const Config::Execute &, unsigned short, const StreamContext &)>> modules{
+    const std::map<std::string, std::function<Gadgetron::Process::child(const Config::Execute &, unsigned short, const StreamContext &)>> modules{
             {"python", start_python_module},
             {"matlab", start_matlab_module},
             {"julia", start_julia_module}
@@ -50,11 +50,11 @@ namespace {
 namespace Gadgetron::Server::Connection::Nodes {
 
     void External::monitor_child(
-            std::shared_ptr<boost::process::child> child,
+            std::shared_ptr<Gadgetron::Process::child> child,
             std::shared_ptr<tcp::acceptor> acceptor
     ) {
         child->wait();
-        io_service.dispatch([=]() { acceptor->close(); });
+        boost::asio::dispatch(io_service, [=]() { acceptor->close(); });
     }
 
     std::shared_ptr<ExternalChannel> External::open_connection(Config::Connect connect, const StreamContext &context) {
@@ -76,7 +76,7 @@ namespace Gadgetron::Server::Connection::Nodes {
 
         GINFO_STREAM("Waiting for external module '" << execute.name << "' on port: " << port);
 
-        auto child = std::make_shared<boost::process::child>(modules.at(execute.type)(execute, port, context));
+        auto child = std::make_shared<Gadgetron::Process::child>(modules.at(execute.type)(execute, port, context));
 
         monitors.child = std::async(
                 std::launch::async,

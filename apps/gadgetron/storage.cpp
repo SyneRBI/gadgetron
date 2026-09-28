@@ -6,7 +6,6 @@
 #include <utility>
 #include <thread>
 
-#include <boost/process.hpp>
 #include <boost/program_options.hpp>
 
 #include <nlohmann/json.hpp>
@@ -42,7 +41,7 @@ void invoke_storage_server_health_check(std::string base_address) {
     }
 }
 
-std::tuple<std::string, std::optional<boost::process::child>> ensure_storage_server(const variables_map& args) {
+std::tuple<std::string, std::optional<Gadgetron::Process::child>> ensure_storage_server(const variables_map& args) {
     if (args.count("disable_storage") && args["disable_storage"].as<bool>()) {
         return {"", std::nullopt};
     }
@@ -55,13 +54,13 @@ std::tuple<std::string, std::optional<boost::process::child>> ensure_storage_ser
 
     auto port = args["storage_port"].empty() ? args["port"].as<unsigned short>() + 110
                                              : args["storage_port"].as<unsigned short>();
-    auto environment = boost::this_process::environment();
-    environment.set("MRD_STORAGE_SERVER_PORT", std::to_string(port));
-    environment.set("MRD_STORAGE_SERVER_DATABASE_CONNECTION_STRING",
-                    (args["database_dir"].as<path>() / "metadata.db").string());
-    environment.set("MRD_STORAGE_SERVER_STORAGE_CONNECTION_STRING", (args["storage_dir"].as<path>()).string());
+    std::vector<std::pair<std::string, std::string>> env_overrides{
+        {"MRD_STORAGE_SERVER_PORT", std::to_string(port)},
+        {"MRD_STORAGE_SERVER_DATABASE_CONNECTION_STRING", (args["database_dir"].as<path>() / "metadata.db").string()},
+        {"MRD_STORAGE_SERVER_STORAGE_CONNECTION_STRING", (args["storage_dir"].as<path>()).string()}
+    };
 
-    auto storage_executable = boost::process::search_path("mrd-storage-server");
+    auto storage_executable = Process::search_path("mrd-storage-server");
     if (storage_executable.empty()) {
         throw std::runtime_error("Failed to find MRD Storage Server.\n"
                                  "Please ensure 'mrd-storage-server' is found on your PATH.\n"
@@ -69,13 +68,14 @@ std::tuple<std::string, std::optional<boost::process::child>> ensure_storage_ser
     }
 
     GDEBUG_STREAM("Found storage server: " + storage_executable.string())
-    GINFO_STREAM("Starting storage server on port " + environment.get("MRD_STORAGE_SERVER_PORT"))
+    GINFO_STREAM("Starting storage server on port " + std::to_string(port))
 
-    auto uri = "http://localhost:" + environment.get("MRD_STORAGE_SERVER_PORT");
+    auto uri = "http://localhost:" + std::to_string(port);
     auto process =
-        Process::child(storage_executable, "--require-parent-pid", // have child process exit if parent crashes
-                       std::to_string(boost::this_process::get_id()), 
-                       boost::process::std_out > boost::process::null, boost::process::std_err > stderr, environment);
+        Process::child(storage_executable,
+                       std::vector<std::string>{"--require-parent-pid", std::to_string(::getpid())}, // exit if parent dies
+                       env_overrides,
+                       /*null_stdout=*/true, /*null_stderr=*/false);
 
     invoke_storage_server_health_check(uri);
 

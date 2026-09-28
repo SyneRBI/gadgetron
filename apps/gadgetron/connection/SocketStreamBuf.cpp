@@ -13,7 +13,7 @@ namespace {
     using boost::asio::ip::tcp;
 
     std::unique_ptr<tcp::socket> connect_socket(
-        const std::string& host, const std::string& service, boost::asio::io_service& context) {
+        const std::string& host, const std::string& service, boost::asio::io_context& context) {
         tcp::resolver resolver{ context };
         boost::system::error_code ec;
         for (int remaining_attemps = 10; remaining_attemps > 0; remaining_attemps--) {
@@ -29,7 +29,7 @@ namespace {
             }
 
             auto socket = std::make_unique<tcp::socket>(context);
-            auto endpoint = *result;
+            auto endpoint = *result.begin();
             socket->connect(endpoint, ec);
             if (ec.failed()) {
                 continue;
@@ -100,7 +100,7 @@ namespace {
         }
 
         SocketStream(const std::string& host, const std::string& service,
-            std::shared_ptr<boost::asio::io_service> io_service = std::make_shared<boost::asio::io_service>())
+            std::shared_ptr<boost::asio::io_context> io_service = std::make_shared<boost::asio::io_context>())
             : SocketStream(connect_socket(host, service, *io_service)) {
             this->io_service = io_service;
         }
@@ -108,7 +108,7 @@ namespace {
         ~SocketStream() override = default;
 
     private:
-        std::shared_ptr<boost::asio::io_service> io_service;
+        std::shared_ptr<boost::asio::io_context> io_service;
         std::unique_ptr<SocketStreamBuf> buffer;
     };
 }
