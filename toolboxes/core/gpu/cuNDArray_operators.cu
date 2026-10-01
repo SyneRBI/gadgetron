@@ -20,7 +20,7 @@ using namespace Gadgetron;
   }
 
   template<typename T>
-  class cuNDA_modulus : public thrust::unary_function<T,T>
+  class cuNDA_modulus
   {
   public:
     cuNDA_modulus(int x):mod(x) {};
@@ -59,25 +59,25 @@ using namespace Gadgetron;
 
 
   template<typename T>
-  struct cuNDA_plus : public thrust::binary_function<complext<T>, T, complext<T> >
+  struct cuNDA_plus
   {
     __device__ complext<T> operator()(const complext<T> &x, const T &y) const {return x+y;}
   };
 
   template<typename T>
-  struct cuNDA_minus : public thrust::binary_function<complext<T>, T, complext<T> >
+  struct cuNDA_minus
   {
     __device__ complext<T> operator()(const complext<T> &x, const T &y) const {return x-y;}
   };
 
   template<typename T>
-  struct cuNDA_multiply : public thrust::binary_function<complext<T>, T, complext<T> >
+  struct cuNDA_multiply
   {
     __device__ complext<T> operator()(const complext<T> &x, const T &y) const {return x*y;}
   };
 
   template<typename T>
-  struct cuNDA_divide : public thrust::binary_function<complext<T>, T, complext<T> >
+  struct cuNDA_divide
   {
     __device__ complext<T> operator()(const complext<T> &x, const T &y) const {return x/y;}
   };
