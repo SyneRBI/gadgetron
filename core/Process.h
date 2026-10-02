@@ -11,8 +11,13 @@
 #ifndef _WIN32
 #include <fcntl.h>
 #include <signal.h>
+#include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
+// The C++ platform headers don't always expose the POSIX `environ` symbol
+// (macOS); declare it (matches <stdlib.h>'s declaration) so all POSIX
+// platforms see it.
+extern char **environ;
 #else
 #include <process.h>
 #include <stdexcept>
@@ -107,6 +112,7 @@ namespace Gadgetron::Process {
             std::vector<char *> argvp, envp;
             auto intern = [&](std::vector<char *> &out, const std::string &s) {
                 store.emplace_back(s.begin(), s.end());
+                store.back().push_back('\0'); // NUL-terminate: execve takes C strings
                 out.push_back(store.back().data());
             };
             intern(argvp, program.string());
@@ -127,7 +133,11 @@ namespace Gadgetron::Process {
                     int fd = ::open("/dev/null", O_WRONLY);
                     if (fd >= 0) ::dup2(fd, 2);
                 }
-                ::execvpe(program.string().c_str(), argvp.data(), envp.data());
+                // execvpe is a GNU extension (not on macOS); resolve the program
+                // against $PATH ourselves and exec the absolute path with an
+                // explicit envp.
+                const std::filesystem::path resolved = search_path(program.string());
+                ::execve(resolved.c_str(), argvp.data(), envp.data());
                 ::_exit(127);
             } else if (pid > 0) {
                 pid_ = pid;
