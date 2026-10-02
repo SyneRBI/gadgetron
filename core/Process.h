@@ -19,8 +19,14 @@
 // platforms see it.
 extern char **environ;
 #else
-#include <process.h>
 #include <stdexcept>
+// MSVC declares popen/pclose in <process.h>; including it by name would
+// resolve to *this* header (core/ is on the include path and Windows is
+// case-insensitive), so declare the CRT functions directly instead.
+extern "C" {
+FILE *popen(const char *, const char *);
+int pclose(FILE *);
+}
 #endif
 
 // Self-contained process helper. Replaces boost::process, whose v1 API
