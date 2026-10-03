@@ -4,6 +4,7 @@ include_directories(
 
 
 add_subdirectory(cpu)
-if (CUDA_FOUND)
+option(DISABLE_STANDALONE_GPU_APPS "Skip standalone GPU apps" Off)
+if (CUDA_FOUND AND NOT DISABLE_STANDALONE_GPU_APPS)
   add_subdirectory(gpu)
 endif()

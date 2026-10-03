@@ -1162,11 +1162,8 @@ public:
     {
         tcp::resolver resolver(io_service);
         // numeric_service flag is required to send data if the Linux machine has no internet connection (in this case the loopback device is the only network device with an address).
-        // https://stackoverflow.com/questions/5971242/how-does-boost-asios-hostname-resolution-work-on-linux-is-it-possible-to-use-n
-        // https://www.boost.org/doc/libs/1_65_0/doc/html/boost_asio/reference/ip__basic_resolver_query.html
-        tcp::resolver::query query(tcp::v4(), hostname.c_str(), port.c_str(), boost::asio::ip::resolver_query_base::numeric_service);
-        tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-        tcp::resolver::iterator end;
+        boost::system::error_code res_ec;
+        auto results = resolver.resolve(hostname, port, boost::asio::ip::resolver_query_base::numeric_service, res_ec);
 
         socket_ = new tcp::socket(io_service);
         if (!socket_) {
@@ -1178,12 +1175,10 @@ public:
         
         boost::system::error_code error = boost::asio::error::host_not_found;
         std::thread t([&](){
-                //TODO:
-                //For newer versions of Boost, we should use
-                //   boost::asio::connect(*socket_, iterator);
-                while (error && endpoint_iterator != end) {
+                for (const auto& endpoint : results) {
+                    if (!error) break;
                     socket_->close();
-                    socket_->connect(*endpoint_iterator++, error);
+                    socket_->connect(endpoint, error);
                 }
                 cv.notify_all();
             });
@@ -1556,7 +1551,7 @@ protected:
         return ret;
     }
 
-    boost::asio::io_service io_service;
+    boost::asio::io_context io_service;
     tcp::socket* socket_;
     std::thread reader_thread_;
     maptype readers_;

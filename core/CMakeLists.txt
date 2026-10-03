@@ -2,7 +2,10 @@ if (WIN32)
     add_definitions(-D__BUILD_GADGETRON_CORE__)
 endif ()
 
-add_compile_options(-Wall -Werror)
+# GNU-style warning flags; MSVC gets its own (/W1 /we4667) in the top-level CMakeLists
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    add_compile_options(-Wall -Werror)
+endif()
 add_subdirectory(readers)
 add_subdirectory(writers)
 add_subdirectory(parallel)
@@ -72,7 +75,7 @@ install(FILES
         MessageID.h
         StorageSetup.h
         IsmrmrdContextVariables.h
-        Process.h
+        ProcessHelper.h
         DESTINATION ${GADGETRON_INSTALL_INCLUDE_PATH} COMPONENT main)
 
 install(FILES

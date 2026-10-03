@@ -53,7 +53,7 @@ namespace Gadgetron::Server::Connection::Nodes {
 
     std::unique_ptr<std::iostream> listen(unsigned short port) {
 
-        boost::asio::io_service service;
+        boost::asio::io_context service;
         boost::asio::ip::tcp::endpoint peer;
         boost::asio::ip::tcp::endpoint local(Gadgetron::Server::Info::tcp_protocol(), port);
         boost::asio::ip::tcp::acceptor acceptor(service, local);

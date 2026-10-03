@@ -1,7 +1,7 @@
 #include "Python.h"
 
 #include <list>
-#include "Process.h"
+#include "ProcessHelper.h"
 
 #include "connection/config/Config.h"
 
@@ -15,7 +15,7 @@ namespace Gadgetron::Server::Connection::Nodes {
     using namespace Gadgetron::Core;
 
 
-    boost::process::child start_julia_module(
+    Gadgetron::Process::child start_julia_module(
         const Config::Execute &execute,
         unsigned short port,
         const StreamContext &context
@@ -27,19 +27,14 @@ namespace Gadgetron::Server::Connection::Nodes {
             std::to_string(port),
             execute.name, *execute.target
         };
-        namespace bp = boost::process;
-        //Workaround for bug in Boost process
-        auto env = boost::this_process::environment();
-
-        env.set("GADGETRON_STORAGE_ADDRESS",context.storage_address);
+        std::vector<std::pair<std::string, std::string>> env_overrides{
+            {"GADGETRON_STORAGE_ADDRESS", context.storage_address}
+        };
 
         auto module = Process::child(
-                boost::process::search_path("julia"),
-                boost::process::args = args,
-                env,
-                boost::process::limit_handles,
-                boost::process::std_out > stdout,
-                boost::process::std_err > stderr
+                Process::search_path("julia"),
+                std::vector<std::string>(args.begin(), args.end()),
+                env_overrides
         );
 
         GINFO_STREAM("Started external Julia module (pid: " << module.id() << ").");
@@ -48,12 +43,7 @@ namespace Gadgetron::Server::Connection::Nodes {
 
     bool julia_available() noexcept {
         try {
-            return !Process::system(
-                    boost::process::search_path("julia"),
-                    boost::process::args={"-e", "using Gadgetron"},
-                    boost::process::std_out > boost::process::null,
-                    boost::process::std_err > boost::process::null
-            );
+            return std::system("\"julia\" -e 'using Gadgetron' >/dev/null 2>&1") == 0;
         }
         catch (...) {
             return false;

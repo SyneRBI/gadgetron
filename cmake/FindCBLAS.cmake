@@ -5,6 +5,19 @@ if (VCPKG_TARGET_TRIPLET)
     set_property(TARGET BLAS PROPERTY INTERFACE_LINK_LIBRARIES OpenBLAS::OpenBLAS)
 	set(BLAS_LIBRARIES OpenBLAS::OpenBLAS)
     set(BLA_VENDOR OpenBLAS)
+elseif (WIN32)
+    # conda-forge win-64 netlib BLAS/LAPACK are import libraries
+    # (Library/lib/{blas,lapack,cblas}.lib for Library/bin/*.dll); CMake's
+    # FindBLAS sgemm_ try-compile check is unreliable here, so link them
+    # directly (mirrors what the SIRF SuperBuild does with explicit
+    # CBLAS_LIBRARY/CBLAS_INCLUDE_DIR).
+    find_library(BLAS_LIBRARIES NAMES blas PATHS ${CMAKE_PREFIX_PATH})
+    find_library(LAPACK_LIBRARIES NAMES lapack PATHS ${CMAKE_PREFIX_PATH})
+    # netlib BLAS/LAPACK are Fortran-only; the C-BLAS API (cblas_*) that
+    # Gadgetron's cpu math toolbox calls lives in libcblas.
+    find_library(GT_CBLAS_WRAPPER_LIB cblas PATHS ${CMAKE_PREFIX_PATH})
+    set(CBLAS_LIBRARIES ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${GT_CBLAS_WRAPPER_LIB})
+    find_path(CBLAS_INCLUDE_DIR cblas.h PATHS ${CMAKE_PREFIX_PATH})
 else ()
 
     set(BLA_VENDOR OpenBLAS)
@@ -25,8 +38,7 @@ else ()
         find_path(CBLAS_BASE_INCLUDE_DIR openblas/cblas.h
                 PATHS /usr/include /usr/local/include)
         if (NOT CBLAS_BASE_INCLUDE_DIR)
-            find_path(CBLAS_INCLUDE_DIR cblas.h
-                    PATHS /usr/include /usr/local/include)
+            find_path(CBLAS_INCLUDE_DIR cblas.h)
         else ()
             set(CBLAS_INCLUDE_DIR ${CBLAS_BASE_INCLUDE_DIR}/openblas)
         endif ()
@@ -35,9 +47,11 @@ else ()
         find_package(BLAS REQUIRED)
         find_package(LAPACK REQUIRED)
 
-        set(CBLAS_LIBRARIES ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
-        find_path(CBLAS_INCLUDE_DIR cblas.h
-                  PATHS /usr/include /usr/local/include)
+        # conda-forge netlib BLAS/LAPACK are Fortran-only; the C-BLAS API
+        # (cblas_*) that Gadgetron's cpu math toolbox calls lives in libcblas.
+        find_library(GT_CBLAS_WRAPPER_LIB cblas)
+        set(CBLAS_LIBRARIES ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${GT_CBLAS_WRAPPER_LIB})
+        find_path(CBLAS_INCLUDE_DIR cblas.h)
     endif ()
 
     message("BLAS ${CBLAS_LIBRARIES} LAPACK ${LAPACK_LIBRARIES}" )
