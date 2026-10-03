@@ -221,6 +221,7 @@ namespace Gadgetron::Process {
         child(const child &) = delete;
         child &operator=(const child &) = delete;
         bool running() const { return false; }
+        int id() const { return -1; }  // matches the POSIX member (unused on Windows)
         void terminate() {}
         void wait() {}
     };
