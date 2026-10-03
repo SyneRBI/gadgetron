@@ -75,7 +75,7 @@ install(FILES
         MessageID.h
         StorageSetup.h
         IsmrmrdContextVariables.h
-        Process.h
+        ProcessHelper.h
         DESTINATION ${GADGETRON_INSTALL_INCLUDE_PATH} COMPONENT main)
 
 install(FILES
