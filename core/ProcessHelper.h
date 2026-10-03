@@ -19,16 +19,8 @@
 // platforms see it.
 extern char **environ;
 #else
+#include <process.h>  // _popen / _pclose (MSVC); core/ holds no process.h to shadow it
 #include <stdexcept>
-// MSVC declares popen/pclose in <process.h>. This file was deliberately
-// named ProcessHelper.h (not Process.h) because on Windows, a file named
-// Process.h in core/ (on the include path) would shadow the CRT's
-// <process.h> for every std header that includes it (case-insensitive FS).
-// Declare the CRT functions directly instead of including <process.h>.
-extern "C" {
-FILE *popen(const char *, const char *);
-int pclose(FILE *);
-}
 #endif
 
 // Self-contained process helper. Replaces boost::process, whose v1 API
@@ -75,12 +67,21 @@ namespace Gadgetron::Process {
     // calls that redirected stdout into a std::future<std::string>).
     inline std::string capture_output(const std::string &command) {
         std::string result;
+#ifdef _WIN32
+        if (FILE *pipe = _popen(command.c_str(), "r")) {
+            char buf[4096];
+            while (std::fgets(buf, sizeof buf, pipe))
+                result += buf;
+            _pclose(pipe);
+        }
+#else
         if (FILE *pipe = ::popen(command.c_str(), "r")) {
             char buf[4096];
             while (std::fgets(buf, sizeof buf, pipe))
                 result += buf;
             ::pclose(pipe);
         }
+#endif
         return result;
     }
 
