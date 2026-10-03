@@ -27,9 +27,9 @@ namespace Gadgetron {
 
 #ifdef WIN32
             // Boost 1.92 removed the resolver::iterator range API; resolve() now
-            // returns a vector of endpoints.
-            for (const auto& ep : resolver.resolve(host_name, ""))
-                ip_list.push_back(ep.address().to_string());
+            // returns a vector of resolver entries.
+            for (const auto& entry : resolver.resolve(host_name, ""))
+                ip_list.push_back(entry.endpoint().address().to_string());
 #else
 
             auto reg = std::regex(R"(inet\s+(\S+))");
