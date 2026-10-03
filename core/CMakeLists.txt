@@ -11,7 +11,7 @@ add_subdirectory(writers)
 add_subdirectory(parallel)
 add_subdirectory(distributed)
 
-add_library(gadgetron_core SHARED
+add_library(gadgetron_core ${GADGETRON_LIB_TYPE}
         Channel.cpp
         Gadget.cpp
         IsmrmrdContextVariables.cpp

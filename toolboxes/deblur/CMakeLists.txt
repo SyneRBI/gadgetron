@@ -1,5 +1,5 @@
 if (CUDA_FOUND)
-add_library(gadgetron_toolbox_deblur SHARED
+add_library(gadgetron_toolbox_deblur ${GADGETRON_LIB_TYPE}
         MFIOperator.h
         MFIOperator.cpp)
 

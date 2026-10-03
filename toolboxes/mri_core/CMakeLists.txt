@@ -31,7 +31,7 @@ set(mri_core_source_files
         mri_core_stream.cpp
         )
 
-add_library(gadgetron_toolbox_mri_core SHARED
+add_library(gadgetron_toolbox_mri_core ${GADGETRON_LIB_TYPE}
         ${mri_core_header_files} ${mri_core_source_files})
 
 set_target_properties(gadgetron_toolbox_mri_core PROPERTIES VERSION ${GADGETRON_VERSION_STRING} SOVERSION ${GADGETRON_SOVERSION})

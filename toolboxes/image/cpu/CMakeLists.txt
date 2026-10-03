@@ -5,7 +5,7 @@ set(image_header_fiels
 
 set(image_src_fiels morphology.cpp )
   
-add_library(gadgetron_toolbox_cpu_image SHARED 
+add_library(gadgetron_toolbox_cpu_image ${GADGETRON_LIB_TYPE} 
     ${image_header_fiels} ${image_src_fiels} )
 
 set_target_properties(gadgetron_toolbox_cpu_image PROPERTIES VERSION ${GADGETRON_VERSION_STRING} SOVERSION ${GADGETRON_SOVERSION})

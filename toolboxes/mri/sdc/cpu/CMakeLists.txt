@@ -3,7 +3,7 @@ if (WIN32)
   add_definitions(-D_USE_MATH_DEFINES)
 endif ()
 
-add_library(gadgetron_toolbox_cpusdc SHARED
+add_library(gadgetron_toolbox_cpusdc ${GADGETRON_LIB_TYPE}
   hoSDC.cpp
 )
 

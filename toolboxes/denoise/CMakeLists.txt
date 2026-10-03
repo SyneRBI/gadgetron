@@ -1,7 +1,7 @@
 
 
 
-add_library(gadgetron_toolbox_denoise SHARED 
+add_library(gadgetron_toolbox_denoise ${GADGETRON_LIB_TYPE} 
         denoise_export.h
         non_local_means.cpp
         non_local_means.h

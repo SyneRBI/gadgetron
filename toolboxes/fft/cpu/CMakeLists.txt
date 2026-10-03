@@ -3,7 +3,7 @@ if (WIN32)
 endif ()
 
 
-add_library(gadgetron_toolbox_cpufft SHARED
+add_library(gadgetron_toolbox_cpufft ${GADGETRON_LIB_TYPE}
         cpufft_export.h
         hoNDFFT.h
         hoNDFFT.cpp

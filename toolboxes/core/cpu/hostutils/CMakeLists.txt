@@ -12,7 +12,7 @@ set(hostutils_header_files
         parameterparser.h
         url_encode.h)
 
-add_library(gadgetron_toolbox_hostutils SHARED
+add_library(gadgetron_toolbox_hostutils ${GADGETRON_LIB_TYPE}
         ${hostutils_header_files}
         ${hostutils_scr_files})
 

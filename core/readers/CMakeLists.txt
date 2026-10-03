@@ -1,5 +1,5 @@
 
-add_library(gadgetron_core_readers SHARED
+add_library(gadgetron_core_readers ${GADGETRON_LIB_TYPE}
         AcquisitionReader.h
         AcquisitionReader.cpp
         WaveformReader.h

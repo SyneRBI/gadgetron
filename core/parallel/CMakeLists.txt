@@ -1,5 +1,5 @@
 
-add_library(gadgetron_core_parallel SHARED
+add_library(gadgetron_core_parallel ${GADGETRON_LIB_TYPE}
         Branch.h
 		Branch.hpp
 		Branch.cpp

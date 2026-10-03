@@ -1,5 +1,5 @@
 
-add_library(gadgetron_toolbox_spiral SHARED TrajectoryParameters.cpp vds.cpp TrajectoryParameters.h vds.h)
+add_library(gadgetron_toolbox_spiral ${GADGETRON_LIB_TYPE} TrajectoryParameters.cpp vds.cpp TrajectoryParameters.h vds.h)
 
 
 target_link_libraries(gadgetron_toolbox_spiral gadgetron_toolbox_cpucore gadgetron_toolbox_mri_core)
