@@ -2,7 +2,7 @@ if (WIN32)
   add_definitions(-D__BUILD_GADGETRON_FATWATER__)
 endif ()
 
-add_library(gadgetron_toolbox_fatwater ${GADGETRON_LIB_TYPE}
+add_library(gadgetron_toolbox_fatwater SHARED
   fatwater_export.h 
   fatwater.h
   fatwater.cpp

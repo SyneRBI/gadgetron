@@ -1,5 +1,5 @@
 
-add_library(gadgetron_core_writers ${GADGETRON_LIB_TYPE}
+add_library(gadgetron_core_writers SHARED
         ImageWriter.cpp
         ImageWriter.h
         BufferWriter.cpp

@@ -46,7 +46,7 @@ set(algorithm_files algorithm/hoNDBSpline.h algorithm/hoNDBSpline.hxx )
 source_group(algorithm FILES ${algorithm_files})
 source_group(image FILES ${image_files})
 
-add_library(gadgetron_toolbox_cpucore ${GADGETRON_LIB_TYPE}
+add_library(gadgetron_toolbox_cpucore SHARED
                     hoMatrix.cpp 
                     ${header_files} 
                     ${image_files}  

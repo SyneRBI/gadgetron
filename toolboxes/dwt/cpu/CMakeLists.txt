@@ -4,7 +4,7 @@ endif ()
 
 
 
-add_library(gadgetron_toolbox_cpudwt ${GADGETRON_LIB_TYPE} 
+add_library(gadgetron_toolbox_cpudwt SHARED 
     hoNDWavelet.h
     hoNDWavelet.cpp
     hoNDHarrWavelet.h

@@ -112,16 +112,6 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 option(GADGETRON_INSTALL_DEPENDENCIES "Install gadgetron dependencies" Off)
 option(DISABLE_FORK "Disables forking in release mode, causing Gadgetron to always run in a single process" Off)
 
-# SIRF consumes these as a static archive. On Mach-O (Apple) a static archive
-# cannot bind weak_odr symbols (vtables / template members) that only exist in a
-# .dylib, so build the toolboxes/core static there to keep those references
-# within a single image. Default: static on Apple, shared elsewhere.
-option(GADGETRON_STATIC_TOOLBOXES "Build gadgetron toolboxes/core as static libraries" ${APPLE})
-set(GADGETRON_LIB_TYPE SHARED)
-if (GADGETRON_STATIC_TOOLBOXES)
-    set(GADGETRON_LIB_TYPE STATIC)
-endif ()
-
 if (DISABLE_FORK)
     add_definitions(-DGADGETRON_DISABLE_FORK)
 endif()

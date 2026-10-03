@@ -8,7 +8,7 @@ set(pr_header_fiels pr_export.h
 
 set(pr_src_fiels pr_kmeans.cpp )
 
-add_library(gadgetron_toolbox_pr ${GADGETRON_LIB_TYPE} 
+add_library(gadgetron_toolbox_pr SHARED 
             ${pr_header_fiels} 
             ${pr_src_fiels} )
 

@@ -31,7 +31,7 @@ set(cmr_src_fiels cmr_kspace_binning.cpp
                 cmr_ismrmrd_util.cpp 
                 )
 
-add_library(gadgetron_toolbox_cmr ${GADGETRON_LIB_TYPE} 
+add_library(gadgetron_toolbox_cmr SHARED 
             ${cmr_header_fiels} 
             ${cmr_src_fiels} )
 

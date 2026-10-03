@@ -1,7 +1,7 @@
 if (WIN32)
   add_definitions(-D__BUILD_GADGETRON_CPUKLT__)
 endif ()
-add_library(gadgetron_toolbox_cpuklt ${GADGETRON_LIB_TYPE} 
+add_library(gadgetron_toolbox_cpuklt SHARED 
   cpuklt_export.h 
   hoNDKLT.h
   hoNDKLT.cpp

@@ -17,7 +17,7 @@ set(plplot_files PLplotExport.h
 
 source_group(plplot FILES ${header_files} ${src_files})
 
-add_library(gadgetron_toolbox_plplot ${GADGETRON_LIB_TYPE} 
+add_library(gadgetron_toolbox_plplot SHARED 
             ${plplot_files} )
 
 set_target_properties(gadgetron_toolbox_plplot PROPERTIES VERSION ${GADGETRON_VERSION_STRING} SOVERSION ${GADGETRON_SOVERSION})

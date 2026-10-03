@@ -1,5 +1,5 @@
 
-add_library(gadgetron_core_distributed ${GADGETRON_LIB_TYPE}
+add_library(gadgetron_core_distributed SHARED
         Distributor.h
         ChannelCreator.h AcquisitionDistributor.cpp AcquisitionDistributor.h Distributor.cpp BufferDistributor.cpp BufferDistributor.h)
 

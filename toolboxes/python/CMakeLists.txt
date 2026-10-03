@@ -11,7 +11,7 @@ set(gadgetron_toolbox_python_header_files python_converters.h
         python_tuple_converter.h
         python_vector_converter.h)
 
-add_library(gadgetron_toolbox_python ${GADGETRON_LIB_TYPE}
+add_library(gadgetron_toolbox_python SHARED
         python_toolbox.cpp
         ${gadgetron_toolbox_python_header_files})
 

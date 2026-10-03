@@ -1,7 +1,7 @@
 
 
 
-add_library(gadgetron_toolbox_t1 ${GADGETRON_LIB_TYPE}
+add_library(gadgetron_toolbox_t1 SHARED
         t1fit.cpp)
 
 set_target_properties(gadgetron_toolbox_t1 PROPERTIES VERSION ${GADGETRON_VERSION_STRING} SOVERSION ${GADGETRON_SOVERSION})

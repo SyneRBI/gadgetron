@@ -3,7 +3,7 @@ if (WIN32)
   add_definitions(-D_USE_MATH_DEFINES)
 endif ()
 
-add_library(gadgetron_toolbox_cpunfft ${GADGETRON_LIB_TYPE}
+add_library(gadgetron_toolbox_cpunfft SHARED
     hoNFFT.h
     hoNFFT.cpp
     ConvolutionMatrix.h

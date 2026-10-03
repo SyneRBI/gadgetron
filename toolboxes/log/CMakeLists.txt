@@ -2,7 +2,7 @@ if (WIN32)
     add_definitions(-D__BUILD_GADGETRON_LOG__)
 endif ()
 
-add_library(gadgetron_toolbox_log ${GADGETRON_LIB_TYPE} log.cpp)
+add_library(gadgetron_toolbox_log SHARED log.cpp)
 target_include_directories(gadgetron_toolbox_log
 		PUBLIC
         $<INSTALL_INTERFACE:include>

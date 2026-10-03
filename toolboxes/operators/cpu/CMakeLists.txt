@@ -44,7 +44,7 @@ set(cpu_operator_src_files
     hoWavelet3DOperator.cpp
     )
 
-add_library(gadgetron_toolbox_cpuoperator ${GADGETRON_LIB_TYPE} ${operator_header_files} ${cpu_operator_header_files} ${cpu_operator_src_files} )
+add_library(gadgetron_toolbox_cpuoperator SHARED ${operator_header_files} ${cpu_operator_header_files} ${cpu_operator_src_files} )
 
 set_target_properties(gadgetron_toolbox_cpuoperator PROPERTIES VERSION ${GADGETRON_VERSION_STRING} SOVERSION ${GADGETRON_SOVERSION})
 
