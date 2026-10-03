@@ -6,9 +6,9 @@ find_package(ZFP)
 
 include_directories(${HDF5_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/core/io)
 
-if(MSVC)
+if(MSVC AND CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|AMD64|i[3-6]86)$")
   set_source_files_properties(CompressedFloatBufferAvx2.cpp PROPERTIES COMPILE_FLAGS "/arch:AVX2")
-else()
+elseif(NOT MSVC AND CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|AMD64|i[3-6]86)$")
   set_source_files_properties(CompressedFloatBufferSse41.cpp PROPERTIES COMPILE_FLAGS "-msse4.1")
   set_source_files_properties(CompressedFloatBufferAvx2.cpp PROPERTIES COMPILE_FLAGS "-mavx2 -mfma")
 endif()
@@ -92,9 +92,6 @@ set(gadgetron_mricore_src_files
         SimpleReconGadget.cpp
         ImageSortGadget.cpp
         CompressedFloatBuffer.cpp
-        CompressedFloatBufferSse41.cpp
-        CompressedFloatBufferAvx2.cpp
-        cpuisa.cpp
         dependencyquery/NoiseSummaryGadget.cpp
         ImageAccumulatorGadget.cpp
         writers/GadgetIsmrmrdWriter.cpp
@@ -107,6 +104,14 @@ set(gadgetron_mricore_src_files
         ImageIndexGadget.cpp
         IsmrmrdDumpGadget.cpp
         )
+
+# x86-only SIMD compression backends (SSE/AVX intrinsics + cpuid)
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|AMD64|i[3-6]86)$")
+    list(APPEND gadgetron_mricore_src_files
+        CompressedFloatBufferSse41.cpp
+        CompressedFloatBufferAvx2.cpp
+        cpuisa.cpp)
+endif()
 
 set(gadgetron_mricore_config_files
         config/default.xml
