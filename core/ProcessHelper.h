@@ -20,9 +20,11 @@
 extern char **environ;
 #else
 #include <stdexcept>
-// MSVC declares popen/pclose in <process.h>; including it by name would
-// resolve to *this* header (core/ is on the include path and Windows is
-// case-insensitive), so declare the CRT functions directly instead.
+// MSVC declares popen/pclose in <process.h>. This file was deliberately
+// named ProcessHelper.h (not Process.h) because on Windows, a file named
+// Process.h in core/ (on the include path) would shadow the CRT's
+// <process.h> for every std header that includes it (case-insensitive FS).
+// Declare the CRT functions directly instead of including <process.h>.
 extern "C" {
 FILE *popen(const char *, const char *);
 int pclose(FILE *);

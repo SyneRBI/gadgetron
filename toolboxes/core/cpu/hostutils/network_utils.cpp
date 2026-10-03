@@ -8,7 +8,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include "log.h"
-#include "Process.h"
+#include "ProcessHelper.h"
 #include <regex>
 
 namespace Gadgetron {

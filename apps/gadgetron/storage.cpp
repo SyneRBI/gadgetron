@@ -11,7 +11,7 @@
 #include <nlohmann/json.hpp>
 
 #include "IsmrmrdContextVariables.h"
-#include "Process.h"
+#include "ProcessHelper.h"
 #include "gadgetron_paths.h"
 #include "log.h"
 
