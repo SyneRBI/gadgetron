@@ -6,7 +6,7 @@
 #include "connection/nodes/external/Matlab.h"
 #include "connection/nodes/external/Julia.h"
 #include "log.h"
-#include "Process.h"
+#include "ProcessHelper.h"
 
 
 #if defined(_WIN32)

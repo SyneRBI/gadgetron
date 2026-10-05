@@ -1,6 +1,6 @@
 #include "Discovery.h"
 
-#include "Process.h"
+#include "ProcessHelper.h"
 
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/io.hpp>
@@ -11,7 +11,7 @@
 #include <boost/spirit/include/qi.hpp>
 
 #include <string>
-#include <Process.h>
+#include "ProcessHelper.h"
 
 BOOST_FUSION_ADAPT_STRUCT(
     Gadgetron::Server::Connection::Nodes::Remote,

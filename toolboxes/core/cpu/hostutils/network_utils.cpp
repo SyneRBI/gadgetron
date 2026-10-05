@@ -8,7 +8,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include "log.h"
-#include "Process.h"
+#include "ProcessHelper.h"
 #include <regex>
 
 namespace Gadgetron {
@@ -26,14 +26,10 @@ namespace Gadgetron {
             host_name = boost::asio::ip::host_name();
 
 #ifdef WIN32
-            boost::asio::ip::tcp::resolver::iterator iter = resolver.resolve({ host_name, "" });
-            boost::asio::ip::tcp::resolver::iterator end;
-
-            while (iter != end)
-            {
-                ip_list.push_back(iter->endpoint().address().to_string());
-                iter++;
-            }
+            // Boost 1.92 removed the resolver::iterator range API; resolve() now
+            // returns a vector of resolver entries.
+            for (const auto& entry : resolver.resolve(host_name, ""))
+                ip_list.push_back(entry.endpoint().address().to_string());
 #else
 
             auto reg = std::regex(R"(inet\s+(\S+))");

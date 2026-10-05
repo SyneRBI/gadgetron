@@ -9,6 +9,13 @@
 #ifdef USE_MKL
 #include "mkl.h"
 #else
+// conda-forge's lapack.h defines lapack_complex_float/_double as C99
+// `float _Complex` / `double _Complex`; MSVC's C++ mode rejects _Complex
+// (g++ accepts it as an extension). Map the types onto std::complex,
+// which has the identical binary layout.
+#define LAPACK_COMPLEX_CUSTOM
+#define lapack_complex_float std::complex<float>
+#define lapack_complex_double std::complex<double>
 extern "C" {
 #include "lapacke.h"
 }

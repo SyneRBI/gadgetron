@@ -4,7 +4,7 @@
 
 #include <ismrmrd/xml.h>
 
-#include "Process.h"
+#include "ProcessHelper.h"
 #include <boost/program_options.hpp>
 
 #include "StorageSetup.h"

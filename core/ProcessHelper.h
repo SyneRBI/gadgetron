@@ -8,14 +8,26 @@
 #include <utility>
 #include <vector>
 
+#ifndef _WIN32
 #include <fcntl.h>
 #include <signal.h>
+#include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
+// The C++ platform headers don't always expose the POSIX `environ` symbol
+// (macOS); declare it (matches <stdlib.h>'s declaration) so all POSIX
+// platforms see it.
+extern char **environ;
+#else
+#include <process.h>  // _popen / _pclose (MSVC); core/ holds no process.h to shadow it
+#include <stdexcept>
+#endif
 
-// Self-contained POSIX process helper. Replaces boost::process, whose v1 API
+// Self-contained process helper. Replaces boost::process, whose v1 API
 // (search_path / args / std_out> / ipstream / limit_handles) was dropped in
 // Boost 1.88+ (conda-forge now ships only the v2 API).
+// On Windows only the path helpers are functional; spawning external
+// processes (MATLAB/Python/Julia nodes) is unsupported and throws.
 namespace Gadgetron::Process {
 
     namespace detail {
@@ -26,17 +38,21 @@ namespace Gadgetron::Process {
     inline std::filesystem::path search_path(const std::string &name) {
         if (name.empty())
             return {};
-        if (name.find('/') != std::string::npos)
+        if (name.find('/') != std::string::npos || name.find('\\') != std::string::npos)
             return name;
         const char *path_env = std::getenv("PATH");
         const std::string dirs = path_env ? path_env : "";
         std::string cur;
         for (size_t i = 0; i <= dirs.size(); ++i) {
-            if (i == dirs.size() || dirs[i] == ':') {
+            if (i == dirs.size() || dirs[i] == ':' || dirs[i] == ';') {
                 if (!cur.empty()) {
                     std::error_code ec;
                     const std::filesystem::path candidate = std::filesystem::path(cur) / name;
-                    if (std::filesystem::exists(candidate, ec) && ::access(candidate.c_str(), X_OK) == 0)
+                    if (std::filesystem::exists(candidate, ec)
+#ifndef _WIN32
+                        && ::access(candidate.c_str(), X_OK) == 0
+#endif
+                    )
                         return candidate;
                 }
                 cur.clear();
@@ -51,16 +67,26 @@ namespace Gadgetron::Process {
     // calls that redirected stdout into a std::future<std::string>).
     inline std::string capture_output(const std::string &command) {
         std::string result;
+#ifdef _WIN32
+        if (FILE *pipe = _popen(command.c_str(), "r")) {
+            char buf[4096];
+            while (std::fgets(buf, sizeof buf, pipe))
+                result += buf;
+            _pclose(pipe);
+        }
+#else
         if (FILE *pipe = ::popen(command.c_str(), "r")) {
             char buf[4096];
             while (std::fgets(buf, sizeof buf, pipe))
                 result += buf;
             ::pclose(pipe);
         }
+#endif
         return result;
     }
 
     // RAII handle to a spawned child process (POSIX fork/exec), replacing boost::process::child.
+#ifndef _WIN32
     class child {
     public:
         child() = default;
@@ -95,6 +121,7 @@ namespace Gadgetron::Process {
             std::vector<char *> argvp, envp;
             auto intern = [&](std::vector<char *> &out, const std::string &s) {
                 store.emplace_back(s.begin(), s.end());
+                store.back().push_back('\0'); // NUL-terminate: execve takes C strings
                 out.push_back(store.back().data());
             };
             intern(argvp, program.string());
@@ -115,7 +142,11 @@ namespace Gadgetron::Process {
                     int fd = ::open("/dev/null", O_WRONLY);
                     if (fd >= 0) ::dup2(fd, 2);
                 }
-                ::execvpe(program.string().c_str(), argvp.data(), envp.data());
+                // execvpe is a GNU extension (not on macOS); resolve the program
+                // against $PATH ourselves and exec the absolute path with an
+                // explicit envp.
+                const std::filesystem::path resolved = search_path(program.string());
+                ::execve(resolved.c_str(), argvp.data(), envp.data());
                 ::_exit(127);
             } else if (pid > 0) {
                 pid_ = pid;
@@ -173,5 +204,28 @@ namespace Gadgetron::Process {
     private:
         pid_t pid_ = -1;
     };
+#else
+    // Windows: external process nodes are unsupported; construction throws. The
+    // type exists so the node code (External.cpp & co.) compiles unmodified.
+    class child {
+    public:
+        child() = default;
+        child(const std::filesystem::path &,
+              std::vector<std::string>,
+              std::vector<std::pair<std::string, std::string>> = {},
+              bool = false,
+              bool = false) {
+            throw std::runtime_error("Gadgetron external process nodes are not supported on Windows");
+        }
+        child(child &&) noexcept = default;
+        child &operator=(child &&) noexcept = default;
+        child(const child &) = delete;
+        child &operator=(const child &) = delete;
+        bool running() const { return false; }
+        int id() const { return -1; }  // matches the POSIX member (unused on Windows)
+        void terminate() {}
+        void wait() {}
+    };
+#endif
 
 } // namespace Gadgetron::Process

@@ -1,7 +1,7 @@
 #include "Matlab.h"
 
 #include <list>
-#include "Process.h"
+#include "ProcessHelper.h"
 #include "connection/config/Config.h"
 
 #include "log.h"
