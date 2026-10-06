@@ -2,6 +2,7 @@
 #include "cuSolverUtils.h"
 #include <thrust/transform.h>
 #include <thrust/iterator/zip_iterator.h>
+#include <thrust/tuple.h>
 #include "cuNDArray_math.h"
 #define MAX_THREADS_PER_BLOCK 512
 

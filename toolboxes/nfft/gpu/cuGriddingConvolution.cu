@@ -3,6 +3,7 @@
 
 #include <thrust/binary_search.h>
 #include <thrust/extrema.h>
+#include <thrust/pair.h>
 #include <thrust/sort.h>
 
 #include "cuNDArray_elemwise.h"
