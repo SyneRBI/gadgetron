@@ -1,7 +1,7 @@
 #include "Python.h"
 
 #include <list>
-#include "Process.h"
+#include "ProcessHelper.h"
 
 #include "connection/config/Config.h"
 
@@ -34,18 +34,8 @@ namespace Gadgetron::Server::Connection::Nodes {
 
         bool is_valid_python3(const std::string& pythonname){
         try {
-            std::future<std::string> output_stream;
-            Process::system(
-                    boost::process::search_path(pythonname),
-                    boost::process::args={"--version"},
-                    boost::process::std_out > output_stream,
-                    boost::process::std_err > boost::process::null
-            );
+            auto output = Process::capture_output(pythonname + " --version 2>&1");
 
-
-            auto output = output_stream.get();
-
-            
             auto [major, minor, patch] = parse_version(output);
 
             if ((major == 3) && (minor > 5))
@@ -73,7 +63,7 @@ namespace Gadgetron::Server::Connection::Nodes {
 
     }
 
-    boost::process::child start_python_module(
+    Gadgetron::Process::child start_python_module(
         const Config::Execute &execute,
         unsigned short port,
         const StreamContext &context
@@ -88,24 +78,18 @@ namespace Gadgetron::Server::Connection::Nodes {
 
         if(execute.target) args.push_back(execute.target.value());
         
-        namespace bp = boost::process;
-        //Workaround for bug in Boost process
-        auto env = boost::this_process::environment();
+        std::vector<std::pair<std::string, std::string>> env_overrides;
         auto orig_python_path = std::getenv("PYTHONPATH");
         if (orig_python_path)
-            env.set("PYTHONPATH",std::string(orig_python_path) + ":" + python_path);
+            env_overrides.emplace_back("PYTHONPATH", std::string(orig_python_path) + ":" + python_path);
         else
-            env.set("PYTHONPATH",python_path);
-        
-        env.set("GADGETRON_STORAGE_ADDRESS",context.storage_address);
+            env_overrides.emplace_back("PYTHONPATH", python_path);
+        env_overrides.emplace_back("GADGETRON_STORAGE_ADDRESS", context.storage_address);
 
         auto module = Process::child(
-                boost::process::search_path(get_python_executable()),
-                boost::process::args = args,
-                env,
-                boost::process::limit_handles,
-                boost::process::std_out > stdout,
-                boost::process::std_err > stderr
+                Process::search_path(get_python_executable()),
+                std::vector<std::string>(args.begin(), args.end()),
+                env_overrides
         );
 
         GINFO_STREAM("Started external Python module (pid: " << module.id() << ").");
@@ -114,12 +98,7 @@ namespace Gadgetron::Server::Connection::Nodes {
 
     bool python_available() noexcept {
         try {
-            return !Process::system(
-                    boost::process::search_path(get_python_executable()),
-                    boost::process::args={"-m", "gadgetron"},
-                    boost::process::std_out > boost::process::null,
-                    boost::process::std_err > boost::process::null
-            );
+            return std::system(("\"" + get_python_executable() + "\" -m gadgetron >/dev/null 2>&1").c_str()) == 0;
         }
         catch (...) {
             return false;

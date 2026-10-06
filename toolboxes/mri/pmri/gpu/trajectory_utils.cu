@@ -1,5 +1,6 @@
 #include "cuNDArray.h"
 #include <thrust/iterator/zip_iterator.h>
+#include <thrust/tuple.h>
 #include "vector_td.h"
 #include "vector_td_utilities.h"
 #include "trajectory_utils.h"

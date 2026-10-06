@@ -3,6 +3,7 @@
 
 #include <thrust/binary_search.h>
 #include <thrust/extrema.h>
+#include <thrust/pair.h>
 #include <thrust/sort.h>
 
 #include "cuNDArray_elemwise.h"
@@ -371,7 +372,7 @@ namespace Gadgetron
         REAL radius = this->plan_.kernel_.get_radius();
         transform(trajectory.begin(), trajectory.end(),
                   c_p_s.begin(), compute_num_cells_per_sample<REAL, D>(radius));
-        inclusive_scan(c_p_s.begin(), c_p_s.end(), c_p_s_ps.begin(),
+        thrust::inclusive_scan(c_p_s.begin(), c_p_s.end(), c_p_s_ps.begin(),
                        thrust::plus<unsigned int>()); // Prefix sum.
 
         // Build the vector of (grid_idx, sample_idx) tuples. Actually kept in

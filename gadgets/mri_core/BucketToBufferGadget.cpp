@@ -9,23 +9,6 @@ using BufferKey =  Gadgetron::BucketToBufferGadget::BufferKey;
 
 
 
-namespace std {
-    template<>
-    struct less<BufferKey>{
-        bool operator()(const BufferKey& idx1, const BufferKey& idx2) const {
-            return std::tie(idx1.average,idx1.slice,idx1.contrast,idx1.phase,idx1.repetition,idx1.set,idx1.segment) <
-                std::tie(idx2.average,idx2.slice,idx2.contrast,idx2.phase,idx2.repetition,idx2.set,idx2.segment);
-        }
-    };
-
-    template<> struct equal_to<BufferKey>{
-        bool operator()(const BufferKey& idx1, const BufferKey& idx2) const {
-            return idx1.average == idx2.average
-                   && idx1.slice == idx2.slice && idx1.contrast == idx2.contrast && idx1.phase == idx2.phase
-                   && idx1.repetition == idx2.repetition && idx1.set == idx2.set && idx1.segment == idx2.segment;
-        }
-    };
-}
 namespace Gadgetron {
     namespace {
 

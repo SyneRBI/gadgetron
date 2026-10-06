@@ -36,14 +36,13 @@ if(CUDA_FOUND)
 find_cuda_helper_libs(cusparse)
 set(CUDA_CUSPARSE_LIBRARIES ${CUDA_cusparse_LIBRARY})
 if( "${CUDA_COMPUTE_CAPABILITY}" MATCHES ALL)
-  set(CUDA_NVCC_FLAGS
-    ${CUDA_NVCC_FLAGS} 
-    ${CUDA_NVCC_FLAGS7}
-    ${CUDA_NVCC_FLAGS75}
-    ${CUDA_NVCC_FLAGS8}
-    ${CUDA_NVCC_FLAGS86}
-    ${CUDA_NVCC_FLAGS87}
-    ${CUDA_NVCC_FLAGS90})
+  # ALL = every arch the toolkit supports. CUDA 13 dropped sm_70, so filter it
+  # out to keep the default (no-GPU) build working across CUDA versions.
+  set(CUDA_ALL_ARCH_FLAGS ${CUDA_NVCC_FLAGS7} ${CUDA_NVCC_FLAGS75} ${CUDA_NVCC_FLAGS8} ${CUDA_NVCC_FLAGS86} ${CUDA_NVCC_FLAGS87} ${CUDA_NVCC_FLAGS90})
+  if(CUDA_VERSION VERSION_GREATER_EQUAL 13.0)
+    list(REMOVE_ITEM CUDA_ALL_ARCH_FLAGS ${CUDA_NVCC_FLAGS7})
+  endif()
+  set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ${CUDA_ALL_ARCH_FLAGS})
 else()
   set(CUDA_MOSTUSED_ARCH "")
   foreach(code ${CUDA_COMPUTE_CAPABILITY})

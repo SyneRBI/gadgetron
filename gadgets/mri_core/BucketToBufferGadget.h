@@ -6,6 +6,7 @@
 #include "mri_core_acquisition_bucket.h"
 #include "mri_core_data.h"
 #include <complex>
+#include <tuple>
 #include <ismrmrd/ismrmrd.h>
 #include <ismrmrd/xml.h>
 
@@ -31,6 +32,17 @@ namespace Gadgetron {
         uint16_t average,slice,contrast,phase,repetition,set,segment;
         BufferKey(const BufferKey&) = default;
         BufferKey(const ISMRMRD::EncodingCounters& idx) : average{idx.average}, slice{idx.slice},contrast{idx.contrast}, phase{idx.phase},repetition{idx.repetition},set{idx.set},segment{idx.segment} {}
+        // Member ops rather than std::less/std::equal_to specializations: libc++
+        // aliases std::less<T> to std::less<void> (ignoring user specializations),
+        // so the type must supply its own operator< / operator==.
+        bool operator<(const BufferKey& o) const {
+            return std::tie(average, slice, contrast, phase, repetition, set, segment) <
+                std::tie(o.average, o.slice, o.contrast, o.phase, o.repetition, o.set, o.segment);
+        }
+        bool operator==(const BufferKey& o) const {
+            return average == o.average && slice == o.slice && contrast == o.contrast
+                && phase == o.phase && repetition == o.repetition && set == o.set && segment == o.segment;
+        }
     };
 
     protected:

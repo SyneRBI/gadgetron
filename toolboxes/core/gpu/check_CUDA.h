@@ -5,6 +5,7 @@
 #pragma once
 
 #include "GadgetronCuException.h"
+#include <boost/current_function.hpp>  // BOOST_CURRENT_FUNCTION (used by CHECK_FOR_CUDA_ERROR)
 
 namespace Gadgetron {
 

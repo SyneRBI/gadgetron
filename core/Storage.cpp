@@ -170,7 +170,9 @@ StorageItemList StorageClient::list_items(StorageItemTags const& tags, size_t li
 
 StorageItemList StorageClient::get_next_page_of_items(StorageItemList const& page) {
     if (page.complete || page.continuation.empty()) {
-        return StorageItemList{.complete = true};
+        StorageItemList empty;
+        empty.complete = true; // designated initializers require C++20 on MSVC
+        return empty;
     }
 
     return get_item_list(page.continuation);

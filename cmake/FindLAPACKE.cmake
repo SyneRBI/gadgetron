@@ -10,6 +10,9 @@ find_path(LAPACKE_INCLUDE_DIR
         )
 
 set(LAPACKE_LIBRARIES ${PC_LAPACKE_LIBRARIES} ${PC_LAPACKE_LINK_LIBRARIES})
+if (NOT LAPACKE_LIBRARIES)
+    find_library(LAPACKE_LIBRARIES lapacke)
+endif()
 
 message("pkgconfig ${PC_LAPACKE_LIBRARIES} and ${PC_lapacke_LINK_LIBRARIES}")
 

@@ -40,13 +40,17 @@ void FlowPhaseSubtractionGadget::process(Core::InputChannel<Core::Image<std::com
         if (data1.size() != data2.size())
             throw std::runtime_error("Images must have same number of elements");
 
+        // Plain references: OpenMP (AppleClang/libomp) cannot capture
+        // structured bindings.
+        auto &d1 = data1;
+        auto &d2 = data2;
 #ifdef USE_OMP
 #pragma omp parallel for
 #endif
-        for (long i = 0; i < (long)data2.size(); i++) {
+        for (long i = 0; i < (long)d2.size(); i++) {
             std::complex<float> tmp =
-                std::polar((std::abs(data1[i]) + std::abs(data2[i])) / 2.0f, std::arg(data2[i]) - std::arg(data1[i]));
-            data2[i] = tmp;
+                std::polar((std::abs(d1[i]) + std::abs(d2[i])) / 2.0f, std::arg(d2[i]) - std::arg(d1[i]));
+            d2[i] = tmp;
         }
 
         header2.set = 0;
