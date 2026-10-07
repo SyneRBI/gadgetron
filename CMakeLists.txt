@@ -230,6 +230,13 @@ if (CUDA_FOUND AND USE_CUDA)
     if (WIN32)
         set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler /Zc:preprocessor -Xcompiler /MD")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:preprocessor")
+        # The thrust ABI inline namespace (_V_<ver>_SM<__CUDA_ARCH_LIST__>) differs
+        # between host (.cpp: empty arch list) and nvcc (.cu: populated) compiles,
+        # so exported Gadgetron functions with thrust args (e.g. cuLinearResample
+        # Operator::write_sort_arrays) get mismatched mangled names -> unresolved
+        # externals in the moco/grappa gadgets. Disable the ABI namespace so thrust
+        # types mangle consistently (safe within a single build).
+        add_definitions(-DTHRUST_DISABLE_ABI_NAMESPACE -DTHRUST_IGNORE_ABI_NAMESPACE_ERROR)
     endif()
     set(CMAKE_CUDA_STANDARD 17)
     #  endif ()
