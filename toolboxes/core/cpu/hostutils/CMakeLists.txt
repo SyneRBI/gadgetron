@@ -18,7 +18,6 @@ add_library(gadgetron_toolbox_hostutils SHARED
 
 target_link_libraries(gadgetron_toolbox_hostutils
         gadgetron_toolbox_log
-        Boost::system
 		gadgetron_core
         )
 

@@ -77,7 +77,6 @@ target_link_libraries(gadgetron
         gadgetron_core_writers
         gadgetron_core_readers
         gadgetron_toolbox_log
-        Boost::system
         Boost::filesystem
         Boost::program_options
         ${CURL_LIBRARIES}

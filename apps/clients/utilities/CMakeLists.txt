@@ -1,9 +1,9 @@
 set(Boost_NO_BOOST_CMAKE ON)
 
 if(WIN32)
-  find_package(Boost COMPONENTS thread system date_time chrono REQUIRED)
+  find_package(Boost COMPONENTS thread date_time chrono REQUIRED)
 else()
-  find_package(Boost COMPONENTS thread system REQUIRED)
+  find_package(Boost COMPONENTS thread REQUIRED)
 endif()
 
 if(WIN32)

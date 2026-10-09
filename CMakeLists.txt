@@ -196,11 +196,10 @@ set(Boost_USE_STATIC_RUNTIME OFF)
 if(WIN32)
     add_definitions( -DHAVE_SNPRINTF) #Python decides to overwrite snprintf if this is not defined, because ofcourse it does.
 endif()
-# We actually only use system and thread explicitly, but they require linking in date_time and chrono
 if (WIN32)
-    find_package(Boost 1.80.0 COMPONENTS coroutine system date_time chrono program_options filesystem timer exception REQUIRED )
+    find_package(Boost 1.80.0 COMPONENTS coroutine date_time chrono program_options filesystem timer exception REQUIRED )
 else()
-    find_package(Boost 1.80.0 COMPONENTS coroutine system date_time program_options filesystem timer REQUIRED )
+    find_package(Boost 1.80.0 COMPONENTS coroutine date_time program_options filesystem timer REQUIRED )
 endif()
 add_definitions("-DBOOST_BIND_GLOBAL_PLACEHOLDERS") # To suppress messages in later versions of boost, in version 1.76.0 there are internal conflicts in boost
 add_definitions("-DBOOST_ALLOW_DEPRECATED_HEADERS") # To suppress messages in later versions of boost, in version 1.76.0 there are internal conflicts in boost
