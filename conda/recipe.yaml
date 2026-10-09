@@ -70,11 +70,6 @@ outputs:
         - libboost-devel ${{ boost }}
         - nlohmann_json
         - pugixml
-      run:
-        - fftw
-        - hdf5 ~=${{ hdf5 }}
-        - libboost-devel ${{ boost }}
-        - pugixml
     tests:
       - script:
           - if: unix
@@ -148,10 +143,6 @@ outputs:
             - libcufft-dev
             - libcusparse-dev
       run:
-        - armadillo >=12,<13
-        - libboost-devel ${{ boost }}
-        - fftw
-        - hdf5 ~=${{ hdf5 }}
         - howardhinnant_date
         - ${{ pin_subpackage('ismrmrd') }}
         - libblas 3.11.0.* *_netlib
@@ -167,7 +158,6 @@ outputs:
         - if: target_platform == "linux-64" or target_platform == "osx-64"
           then: mrd-storage-server
         - nlohmann_json
-        - pugixml
         - range-v3
         - if: with_cuda
           then:
@@ -178,12 +168,6 @@ outputs:
             - libcufft
             - libcusparse
             - libcurand
-      ignore_run_exports:
-        by_name:
-          - if: with_cuda
-            then:
-              - cuda-version
-              - cuda-cudart-dev
     tests:
       - script:
           - if: unix
