@@ -3,15 +3,12 @@
 # Channel includes:
 # - ismrmrd::mrd-storage-server (gadgetron run dep; linux-64 + osx-64 only)
 #
-# ismrmrd is built from source here (as in SIRF-SuperBuild) because
-# conda-forge has no pre-built ismrmrd for Boost 1.90. Only the gadgetron
-# package is published (to the syneRBI channel); ismrmrd is a local build
-# dependency.
+# ismrmrd::ismrmrd lacks boost==1.90 support (https://github.com/ismrmrd/ismrmrd/pull/272) so is built here instead
 
 schema_version: 1
 
 context:
-  # pet-rd-tools==2.2.0 needs boost==1.90
+  # pet-rd-tools==2.2.0 needs boost>=1.90
   # stir==6.4.0 needs boost>=1.90
   boost: 1.90.0.*
   hdf5: 1.14.6
@@ -25,7 +22,7 @@ context:
   ccache_maxsize: ${{ env.get("CCACHE_MAXSIZE", default="5G") }}
 
 about:
-  summary: Gadgetron MR image reconstruction framework (CPU-only, SyneRBI fork)
+  summary: Gadgetron MR image reconstruction framework (SyneRBI fork)
   # Custom "GADGETRON SOFTWARE LICENSE V1.0" (NIH public-domain-style)
   license: LicenseRef-GADGETRON
   license_file: LICENSE
@@ -180,7 +177,7 @@ outputs:
             then: test -f $PREFIX/lib/libgadgetron_core.so -o -f $PREFIX/lib/libgadgetron_core.dylib -o -f $PREFIX/lib/libgadgetron_core.a
             else: if not exist "%LIBRARY_PREFIX%\bin\gadgetron_core.dll" exit 1
     about:
-      summary: "Gadgetron MR image reconstruction framework (CPU-only, SyneRBI fork)"
+      summary: "Gadgetron MR image reconstruction framework (SyneRBI fork)"
       # Custom "GADGETRON SOFTWARE LICENSE V1.0" (NIH public-domain-style)
       license: LicenseRef-GADGETRON
       license_file: LICENSE
