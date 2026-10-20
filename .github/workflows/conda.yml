@@ -31,7 +31,7 @@ jobs:
       uses: actions/cache@v6
       with:
         path: ${{ env.CCACHE_DIR }}
-        key: ccache-${{ runner.os }}-cu${{ matrix.cuda }}-${{ hashFiles('conda/recipe.yaml', 'conda/build-*') }}
+        key: ccache-${{ runner.os }}-cu${{ matrix.cuda }}-${{ hashFiles('conda/recipe.yaml', 'conda/variants.yaml', 'conda/build-*') }}
         restore-keys: ccache-${{ runner.os }}-cu${{ matrix.cuda }}-
     - name: config
       id: config
@@ -58,7 +58,7 @@ jobs:
         # --no-build-id: required for ccache
         build-args: >
           --target-platform ${{ steps.config.outputs.target }}
-          -c conda-forge -c ismrmrd
+          -c conda-forge -c synerbi
           ${{ matrix.cuda != 'None' && '--test skip' || '' }} --variant cuda_compiler_version=${{ matrix.cuda }}
           --no-build-id
         artifact-name: conda-cu${{ matrix.cuda }}-${{ steps.config.outputs.target }}

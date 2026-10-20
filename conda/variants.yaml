@@ -2,3 +2,13 @@
 # resolve to cuda-nvcc_linux-64 instead of the dead cuda_linux_64 metapackage.
 cuda_compiler:
   - cuda-nvcc
+# collapse into 2 builds: latest, legacy
+zip_keys:
+  - - boost
+    - hdf5
+hdf5:
+  - "*"
+  - 1.14.6
+boost:
+  - "*"
+  - 1.90.0 # constrained by pet-rd-tools>=2.2.0, stir>=6.4.0
